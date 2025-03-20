@@ -2,30 +2,29 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./App.css"; // ✅ Import CSS
 
-const API_URL = "https://myaiapp-backend.onrender.com/";
+const API_URL = "https://myaiapp-backend.onrender.com/api/send";
 
 function App() {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
 
     const sendMessage = async () => {
-      if (!input.trim()) return; // Prevent empty messages
-  
-      try {
-          const userMessage = { sender: "User", receiver: "Bot", text: input };
-  
-          // ✅ Send to backend first
-          const res = await axios.post(API_URL, userMessage);
-  
-          // ✅ Only update state with API response (not duplicating user message)
-          setMessages((prev) => [...prev, ...res.data]);
-  
-          setInput(""); // Clear input field
-      } catch (error) {
-          console.error("Error sending message:", error);
-      }
-  };
-  
+        if (!input.trim()) return; // Prevent empty messages
+
+        try {
+            const userMessage = { sender: "User", text: input };
+
+            // ✅ Send user message to backend
+            const res = await axios.post(API_URL, userMessage);
+
+            // ✅ Append user's message & bot's response
+            setMessages((prev) => [...prev, userMessage, ...res.data]);
+
+            setInput(""); // Clear input field
+        } catch (error) {
+            console.error("Error sending message:", error);
+        }
+    };
 
     return (
         <div className="chat-container">
